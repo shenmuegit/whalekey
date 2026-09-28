@@ -1,0 +1,10 @@
+{
+    "uniqueId": "Qwen/Qwen2.5-0.5B-Instruct-GGUF",
+    "artifactVersion": "Q4_K_M",
+    "name": "Qwen2.5-0.5B-Instruct-GGUF",
+    "website": "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF",
+    "tag": "model",
+    "licenses": [
+        "Apache-2.0"
+    ]
+}

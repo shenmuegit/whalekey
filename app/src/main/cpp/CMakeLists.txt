@@ -61,6 +61,26 @@ target_link_libraries(native-lib
         pinyin-customphrase
         )
 
+set(LLAMA_BUILD_COMMON OFF)
+set(LLAMA_BUILD_TESTS OFF)
+set(LLAMA_BUILD_TOOLS OFF)
+set(LLAMA_BUILD_EXAMPLES OFF)
+set(LLAMA_BUILD_SERVER OFF)
+set(LLAMA_BUILD_APP OFF)
+set(LLAMA_OPENSSL OFF)
+set(GGML_NATIVE OFF)
+set(GGML_OPENMP OFF)
+set(GGML_LLAMAFILE OFF)
+set(GGML_BACKEND_DL OFF)
+set(BUILD_SHARED_LIBS OFF)
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/llama.cpp" llama-build)
+foreach(rewrite_target llama ggml ggml-base ggml-cpu)
+    target_compile_options(${rewrite_target} PRIVATE -O3)
+endforeach()
+
+add_library(whalekey-rewrite SHARED rewrite.cpp)
+target_link_libraries(whalekey-rewrite PRIVATE llama log)
+
 # copy module libraries from dependency lib
 add_custom_target(copy-fcitx5-modules
         COMMAND ${CMAKE_COMMAND} -E copy_if_different

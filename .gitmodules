@@ -14,3 +14,7 @@
 [submodule "lib/fcitx5-chinese-addons/src/main/cpp/fcitx5-chinese-addons"]
 	path = lib/fcitx5-chinese-addons/src/main/cpp/fcitx5-chinese-addons
 	url = https://github.com/fcitx/fcitx5-chinese-addons.git
+[submodule "third_party/llama.cpp"]
+	path = third_party/llama.cpp
+	url = https://github.com/ggml-org/llama.cpp.git
+	shallow = true

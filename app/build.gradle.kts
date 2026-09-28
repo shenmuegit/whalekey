@@ -22,6 +22,7 @@ android {
                 targets(
                     // jni
                     "native-lib",
+                    "whalekey-rewrite",
                     // copy fcitx5 built-in addon libraries
                     "copy-fcitx5-modules",
                     // android specific modules
@@ -72,6 +73,14 @@ fcitxComponent {
         "usr/share/fcitx5/inputmethod/$it.conf"
     }
     installPrebuiltAssets = true
+}
+
+generateDataDescriptor {
+    excludes.addAll(
+        "models/qwen2.5-0.5b-instruct-q4_k_m.gguf",
+        "licenses/Qwen2.5-0.5B-Instruct-LICENSE.txt",
+        "licenses/llama.cpp-LICENSE.txt"
+    )
 }
 
 ksp {
