@@ -65,8 +65,10 @@ fcitxComponent {
         "libime",
         "fcitx5-chinese-addons"
     )
-    // exclude (delete immediately after install) tables that nobody would use
-    excludeFiles = listOf("cangjie", "erbi", "qxm", "wanfeng").map {
+    // Keep full Pinyin as the only bundled Chinese input method.
+    excludeFiles = listOf(
+        "cangjie", "erbi", "qxm", "wanfeng", "shuangpin", "wbpy", "wbx", "zrm", "db"
+    ).map {
         "usr/share/fcitx5/inputmethod/$it.conf"
     }
     installPrebuiltAssets = true

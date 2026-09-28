@@ -105,18 +105,6 @@ class FcitxTest {
     }
 
     @Test
-    fun testWbx(): Unit = runBlocking {
-        fcitx.setEnabledIme(arrayOf("wbx"))
-        sendString("wqvb")
-        val expected = "你好"
-        fcitx.select(0)
-        val commitString = receiveFirstCommitString()?.data
-        Timber.i("commitString is $commitString")
-        Assert.assertEquals(expected, commitString)
-        fcitx.reset()
-    }
-
-    @Test
     fun testPinyin(): Unit = runBlocking {
         fcitx.setEnabledIme(arrayOf("pinyin"))
         sendString("nihaoshijie")

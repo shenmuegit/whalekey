@@ -404,6 +404,7 @@ class Fcitx(private val context: Context) : FcitxAPI, FcitxLifecycleOwner {
         // will be called in fcitx main thread
         private fun onFirstRun() {
             Timber.i("onFirstRun")
+            setEnabledInputMethods(arrayOf("pinyin"))
         }
 
         /**

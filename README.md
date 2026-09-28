@@ -10,7 +10,7 @@
   <a href="https://github.com/shenmuegit/whalekey/issues">Roadmap and progress</a>
 </p>
 
-> **Status: early development.** A debug APK builds from source; there is no release APK or device validation yet.
+> **Status: early development.** A debug APK builds from source and has been tested on an Android 15 emulator. There is no release APK yet.
 
 ## What WhaleKey will do
 
