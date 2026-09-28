@@ -321,4 +321,9 @@
     <string name="keyboard_height_percent_base">键盘高度百分比</string>
     <string name="display_metrics">显示指标 (Resources.getDisplayMetrics)</string>
     <string name="real_size">真实尺寸 (Display.getRealSize)</string>
+    <string name="rewrite_selected_text">改写选中文字</string>
+    <string name="rewriting_selected_text">正在本机改写选中文字…</string>
+    <string name="rewrite_preview">改写预览</string>
+    <string name="replace_selected_text">替换选中文字</string>
+    <string name="rewrite_failed">无法改写选中文字</string>
 </resources>

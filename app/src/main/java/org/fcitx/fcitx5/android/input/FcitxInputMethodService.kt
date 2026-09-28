@@ -6,6 +6,7 @@
 package org.fcitx.fcitx5.android.input
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.pm.ActivityInfo
 import android.content.res.ColorStateList
@@ -26,6 +27,7 @@ import android.view.Window
 import android.view.WindowManager
 import android.view.inputmethod.CursorAnchorInfo
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.ExtractedTextRequest
 import android.view.inputmethod.InlineSuggestionsRequest
 import android.view.inputmethod.InlineSuggestionsResponse
 import android.view.inputmethod.InputMethodSubtype
@@ -40,6 +42,7 @@ import androidx.autofill.inline.common.ViewStyle
 import androidx.autofill.inline.v1.InlineSuggestionUi
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -73,6 +76,7 @@ import org.fcitx.fcitx5.android.utils.isTypeNull
 import org.fcitx.fcitx5.android.utils.monitorCursorAnchor
 import org.fcitx.fcitx5.android.utils.styledColorOrDefault
 import org.fcitx.fcitx5.android.utils.styledFloat
+import org.fcitx.fcitx5.android.utils.toast
 import org.fcitx.fcitx5.android.utils.withBatchEdit
 import splitties.bitflags.hasFlag
 import splitties.dimensions.dp
@@ -121,6 +125,8 @@ class FcitxInputMethodService : LifecycleInputMethodService() {
     private var capabilityFlags = CapabilityFlags.DefaultFlags
 
     private val selection = CursorTracker()
+    private var rewriteGeneration = 0
+    private var rewriteInProgress = false
 
     val currentInputSelection: CursorRange
         get() = selection.latest
@@ -725,6 +731,7 @@ class FcitxInputMethodService : LifecycleInputMethodService() {
     }
 
     override fun onStartInput(attribute: EditorInfo, restarting: Boolean) {
+        rewriteGeneration++
         // update selection as soon as possible
         // sometimes when restarting input, onUpdateSelection happens before onStartInput, and
         // initialSel{Start,End} is outdated. but it's the client app's responsibility to send
@@ -1048,6 +1055,7 @@ class FcitxInputMethodService : LifecycleInputMethodService() {
     }
 
     override fun onFinishInputView(finishingInput: Boolean) {
+        rewriteGeneration++
         Timber.d("onFinishInputView: finishingInput=$finishingInput")
         decorLocationUpdated = false
         inputDeviceMgr.onFinishInputView()
@@ -1064,6 +1072,7 @@ class FcitxInputMethodService : LifecycleInputMethodService() {
     }
 
     override fun onFinishInput() {
+        rewriteGeneration++
         Timber.d("onFinishInput")
         postFcitxJob {
             focus(false)
@@ -1095,6 +1104,91 @@ class FcitxInputMethodService : LifecycleInputMethodService() {
     }
 
     private var showingDialog: Dialog? = null
+
+    fun canRewriteSelection(): Boolean {
+        if (composing.isNotEmpty() ||
+            fcitx.runImmediately { clientPreeditCached.isNotEmpty() || inputPanelCached.preedit.isNotEmpty() }
+        ) return false
+        val type = currentInputEditorInfo?.inputType ?: return false
+        val variation = type and InputType.TYPE_MASK_VARIATION
+        return when (type and InputType.TYPE_MASK_CLASS) {
+            InputType.TYPE_CLASS_TEXT -> variation != InputType.TYPE_TEXT_VARIATION_PASSWORD &&
+                variation != InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD &&
+                variation != InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            InputType.TYPE_CLASS_NUMBER -> variation != InputType.TYPE_NUMBER_VARIATION_PASSWORD
+            else -> true
+        }
+    }
+
+    fun rewriteSelectedText() {
+        if (rewriteInProgress || !canRewriteSelection()) return
+        val connection = currentInputConnection ?: return
+        fun snapshot(chars: CharSequence?, offset: Int, from: Int, to: Int): Triple<Int, Int, String>? {
+            val text = chars ?: return null
+            val start = minOf(from, to)
+            val end = maxOf(from, to)
+            if (offset < 0 || start < 0 || end > text.length || end <= start) return null
+            return Triple(offset + start, offset + end, text.subSequence(start, end).toString())
+        }
+        fun selectedText(): Triple<Int, Int, String>? {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                connection.getSurroundingText(0, 0, 0)?.let {
+                    if (it.offset >= 0) return snapshot(it.text, it.offset, it.selectionStart, it.selectionEnd)
+                }
+            }
+            val extracted = connection.getExtractedText(ExtractedTextRequest(), 0) ?: return null
+            return snapshot(extracted.text, extracted.startOffset, extracted.selectionStart, extracted.selectionEnd)
+        }
+        val (start, end, original) = selectedText() ?: return
+        if (original.isBlank()) return
+        val generation = rewriteGeneration
+
+        fun selectionUnchanged(): Boolean = generation == rewriteGeneration &&
+            canRewriteSelection() &&
+            currentInputConnection === connection &&
+            currentInputSelection.rangeEquals(start, end) &&
+            selectedText() == Triple(start, end, original)
+
+        rewriteInProgress = true
+        lifecycleScope.launch {
+            var preview: String? = null
+            val progress = AlertDialog.Builder(this@FcitxInputMethodService)
+                .setTitle(R.string.rewrite_preview)
+                .setMessage(R.string.rewriting_selected_text)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(R.string.replace_selected_text) { _, _ ->
+                    preview?.let { if (selectionUnchanged()) commitText(it) }
+                }
+                .setCancelable(false)
+                .create()
+            showDialog(progress)
+            progress.getButton(AlertDialog.BUTTON_NEGATIVE).visibility = View.GONE
+            progress.getButton(AlertDialog.BUTTON_POSITIVE).visibility = View.GONE
+            val rewritten = try {
+                LocalRewriter.rewrite(this@FcitxInputMethodService, original)
+            } catch (error: CancellationException) {
+                progress.dismiss()
+                throw error
+            } catch (_: Exception) {
+                null
+            } finally {
+                rewriteInProgress = false
+            }
+            if (!selectionUnchanged()) {
+                progress.dismiss()
+                return@launch
+            }
+            if (rewritten.isNullOrBlank() || rewritten == original) {
+                progress.dismiss()
+                toast(R.string.rewrite_failed)
+                return@launch
+            }
+            preview = rewritten
+            progress.setMessage(rewritten)
+            progress.getButton(AlertDialog.BUTTON_NEGATIVE).visibility = View.VISIBLE
+            progress.getButton(AlertDialog.BUTTON_POSITIVE).visibility = View.VISIBLE
+        }
+    }
 
     fun showDialog(dialog: Dialog) {
         showingDialog?.dismiss()

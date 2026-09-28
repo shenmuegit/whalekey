@@ -28,6 +28,8 @@ Development tasks and their acceptance criteria are tracked in [GitHub Issues](h
 
 The debug APK bundles [Qwen2.5-0.5B-Instruct-GGUF](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF) (Q4_K_M, 491 MB) and runs it with [llama.cpp](https://github.com/ggml-org/llama.cpp). The first rewrite copies the model into app-private storage; it does not download a model. The rewrite operation does not save the text it receives. The keyboard action and preview are tracked in [Issue #5](https://github.com/shenmuegit/whalekey/issues/5).
 
+When an editor cannot report the selection's position, WhaleKey temporarily reads the current field to verify it. Only the selected text goes to the on-device model; field contents are not logged, saved, or uploaded.
+
 ## Build from source
 
 Building requires Git LFS, JDK 21, Android SDK Platform 36, Build Tools 36.1.0, NDK 28.0.13004108, and CMake 3.31.6.

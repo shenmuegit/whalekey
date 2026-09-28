@@ -194,7 +194,12 @@ class TextEditingUi(
         contentDescription = ctx.getString(R.string.clipboard)
     }
 
+    val rewriteButton = ToolButton(ctx, R.drawable.ic_baseline_edit_24, theme).apply {
+        contentDescription = ctx.getString(R.string.rewrite_selected_text)
+    }
+
     val extension = horizontalLayout {
+        add(rewriteButton, lParams(dp(40), dp(40)))
         add(clipboardButton, lParams(dp(40), dp(40)))
     }
 }

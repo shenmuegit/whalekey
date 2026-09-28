@@ -95,6 +95,9 @@ class TextEditingWindow : InputWindow.ExtendedInputWindow<TextEditingWindow>(),
             clipboardButton.setOnClickListener {
                 windowManager.attachWindow(ClipboardWindow())
             }
+            rewriteButton.setOnClickListener {
+                service.rewriteSelectedText()
+            }
         }
     }
 
@@ -110,6 +113,8 @@ class TextEditingWindow : InputWindow.ExtendedInputWindow<TextEditingWindow>(),
     override fun onSelectionUpdate(start: Int, end: Int) {
         hasSelection = start != end
         ui.updateSelection(hasSelection, userSelection)
+        ui.rewriteButton.visibility = if (service.canRewriteSelection()) View.VISIBLE else View.GONE
+        ui.rewriteButton.isEnabled = hasSelection
     }
 
     override val title by lazy {
