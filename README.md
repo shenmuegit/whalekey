@@ -39,9 +39,10 @@ git clone --recurse-submodules https://github.com/shenmuegit/whalekey.git
 cd whalekey
 git lfs pull
 ./gradlew :app:assembleDebug -PbuildABI=x86_64
+./gradlew :app:assembleDebug -PbuildABI=arm64-v8a
 ```
 
-The APK is written to `app/build/outputs/apk/debug/`. The `x86_64` build is intended for an Android emulator; choose a supported ABI for your device.
+The APK is written to `app/build/outputs/apk/debug/`. Use `x86_64` for an Android emulator or `arm64-v8a` for an ARM64 device.
 
 ## License and upstream
 
