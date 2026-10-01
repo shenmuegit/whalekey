@@ -1184,7 +1184,7 @@ class FcitxInputMethodService : LifecycleInputMethodService() {
                 return@launch
             }
             preview = rewritten
-            progress.setMessage(rewritten)
+            progress.setMessage(getString(R.string.rewrite_comparison, original, rewritten))
             progress.getButton(AlertDialog.BUTTON_NEGATIVE).visibility = View.VISIBLE
             progress.getButton(AlertDialog.BUTTON_POSITIVE).visibility = View.VISIBLE
         }

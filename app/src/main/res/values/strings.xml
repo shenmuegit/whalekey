@@ -324,6 +324,7 @@
     <string name="rewrite_selected_text">Rewrite selected text</string>
     <string name="rewriting_selected_text">Rewriting selected text on this device…</string>
     <string name="rewrite_preview">Rewrite preview</string>
+    <string name="rewrite_comparison">Original:\n%1$s\n\nRewrite:\n%2$s</string>
     <string name="replace_selected_text">Replace selection</string>
     <string name="rewrite_failed">Could not rewrite the selected text</string>
 </resources>
