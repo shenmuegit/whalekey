@@ -324,6 +324,7 @@
     <string name="rewrite_selected_text">改写选中文字</string>
     <string name="rewriting_selected_text">正在本机改写选中文字…</string>
     <string name="rewrite_preview">改写预览</string>
+    <string name="rewrite_comparison">原文：\n%1$s\n\n改写后：\n%2$s</string>
     <string name="replace_selected_text">替换选中文字</string>
     <string name="rewrite_failed">无法改写选中文字</string>
 </resources>
