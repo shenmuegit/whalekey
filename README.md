@@ -30,6 +30,10 @@ The debug APK bundles [Qwen2.5-0.5B-Instruct-GGUF](https://huggingface.co/Qwen/Q
 
 When an editor cannot report the selection's position, WhaleKey temporarily reads the current field to verify it. Only the selected text goes to the on-device model; field contents are not logged, saved, or uploaded.
 
+## Clipboard history
+
+Clipboard history recording starts off on a fresh install. You can enable it in Settings → Clipboard or from the keyboard's Clipboard panel. Turning recording off stops new entries but does not delete entries already saved; use **Clear clipboard database** to remove them. Device checks for lock-screen visibility and data export are tracked in [Issue #9](https://github.com/shenmuegit/whalekey/issues/9).
+
 ## Build from source
 
 Building requires Git LFS, JDK 21, Android SDK Platform 36, Build Tools 36.1.0, NDK 28.0.13004108, and CMake 3.31.6.

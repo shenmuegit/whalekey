@@ -332,7 +332,8 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
     }
 
     inner class Clipboard : ManagedPreferenceCategory(R.string.clipboard, sharedPreferences) {
-        val clipboardListening = switch(R.string.clipboard_listening, "clipboard_enable", true)
+        // Clipboard history contains private text; new installs must opt in to recording it.
+        val clipboardListening = switch(R.string.clipboard_listening, "clipboard_enable", false)
         val clipboardHistoryLimit = int(
             R.string.clipboard_limit,
             "clipboard_limit",
