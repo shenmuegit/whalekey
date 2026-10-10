@@ -4,6 +4,7 @@
  */
 package org.fcitx.fcitx5.android.input.wm
 
+import android.app.KeyguardManager
 import android.view.View
 import android.widget.FrameLayout
 import androidx.transition.Transition
@@ -13,6 +14,7 @@ import org.fcitx.fcitx5.android.R
 import org.fcitx.fcitx5.android.data.prefs.AppPrefs
 import org.fcitx.fcitx5.android.input.broadcast.InputBroadcastReceiver
 import org.fcitx.fcitx5.android.input.broadcast.InputBroadcaster
+import org.fcitx.fcitx5.android.input.clipboard.ClipboardWindow
 import org.fcitx.fcitx5.android.input.dependency.UniqueViewComponent
 import org.fcitx.fcitx5.android.input.dependency.context
 import org.mechdancer.dependency.DynamicScope
@@ -45,6 +47,10 @@ class InputWindowManager : UniqueViewComponent<InputWindowManager, FrameLayout>(
         remove: View,
         add: View
     ) {
+        if (context.getSystemService(KeyguardManager::class.java).isKeyguardLocked) {
+            TransitionManager.endTransitions(view)
+            return
+        }
         if (disableAnimation)
             return
         enterAnimation?.addTarget(add)
@@ -112,6 +118,9 @@ class InputWindowManager : UniqueViewComponent<InputWindowManager, FrameLayout>(
      * [attachWindow] includes the operation done by [addEssentialWindow].
      */
     fun attachWindow(window: InputWindow) {
+        if (window is ClipboardWindow &&
+            context.getSystemService(KeyguardManager::class.java).isKeyguardLocked
+        ) return
         if (window === currentWindow)
             Timber.d("Skip attaching $window")
         val newView = if (window is EssentialWindow) {

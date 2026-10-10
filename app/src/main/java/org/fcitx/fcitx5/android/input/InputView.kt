@@ -6,6 +6,7 @@
 package org.fcitx.fcitx5.android.input
 
 import android.annotation.SuppressLint
+import android.app.KeyguardManager
 import android.content.res.Configuration
 import android.graphics.Point
 import android.os.Build
@@ -331,7 +332,9 @@ class InputView(
     fun startInput(info: EditorInfo, capFlags: CapabilityFlags, restarting: Boolean = false) {
         broadcaster.onStartInput(info, capFlags)
         returnKeyDrawable.updateDrawableOnEditorInfo(info)
-        if (focusChangeResetKeyboard || !restarting) {
+        if (focusChangeResetKeyboard || !restarting ||
+            context.getSystemService(KeyguardManager::class.java).isKeyguardLocked
+        ) {
             windowManager.attachWindow(KeyboardWindow)
         }
     }

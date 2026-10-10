@@ -32,7 +32,7 @@ When an editor cannot report the selection's position, WhaleKey temporarily read
 
 ## Clipboard history
 
-Clipboard history recording starts off on a fresh install. You can enable it in Settings → Clipboard or from the keyboard's Clipboard panel. Turning recording off stops new entries but does not delete entries already saved; use **Clear clipboard database** to remove them. Device checks for lock-screen visibility and data export are tracked in [Issue #9](https://github.com/shenmuegit/whalekey/issues/9).
+Clipboard history recording starts off on a fresh install. You can enable it in Settings → Clipboard or from the keyboard's Clipboard panel. Turning recording off stops new entries but does not delete entries already saved; use **Clear clipboard database** to remove them. Saved history and clipboard suggestions are hidden while the lock screen is showing. Manual data exports include saved clipboard history. Verification is recorded in [Issue #9](https://github.com/shenmuegit/whalekey/issues/9).
 
 ## Build from source
 
