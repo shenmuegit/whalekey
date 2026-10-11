@@ -25,6 +25,7 @@ android {
                     "whalekey-rewrite",
                     // copy fcitx5 built-in addon libraries
                     "copy-fcitx5-modules",
+                    "rime",
                     // android specific modules
                     "androidfrontend",
                     "androidkeyboard",
@@ -71,7 +72,7 @@ fcitxComponent {
         "cangjie", "erbi", "qxm", "wanfeng", "shuangpin", "wbpy", "wbx", "zrm", "db"
     ).map {
         "usr/share/fcitx5/inputmethod/$it.conf"
-    }
+    } + "usr/share/fcitx5/inputmethod/rime.conf"
     installPrebuiltAssets = true
 }
 
@@ -79,7 +80,8 @@ generateDataDescriptor {
     excludes.addAll(
         "models/qwen2.5-0.5b-instruct-q4_k_m.gguf",
         "licenses/Qwen2.5-0.5B-Instruct-LICENSE.txt",
-        "licenses/llama.cpp-LICENSE.txt"
+        "licenses/llama.cpp-LICENSE.txt",
+        "licenses/librime-octagram-GPL-3.0.txt"
     )
 }
 

@@ -51,3 +51,5 @@ The APK is written to `app/build/outputs/apk/debug/`. Use `x86_64` for an Androi
 ## License and upstream
 
 WhaleKey is based on [Fcitx5 Android](https://github.com/fcitx5-android/fcitx5-android). Its source and pinned dependencies retain their upstream copyright notices and licenses. The bundled Qwen model is Apache-2.0 licensed; llama.cpp is MIT licensed. See [LICENSE](LICENSE), the [bundled notices](app/src/main/assets/licenses), and the license headers in each component.
+
+The bundled Rime runtime statically links [librime-octagram at `dfcc151`](https://github.com/lotem/librime-octagram/tree/dfcc15115788c828d9dd7b4bff68067d3ce2ffb8), licensed GPL-3.0-only at that revision. Its [full license text](app/src/main/assets/licenses/librime-octagram-GPL-3.0.txt) is included in the APK.

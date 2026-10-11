@@ -92,6 +92,7 @@ public:
         p_quickphrase = addonMgr.addon("quickphrase");
         p_unicode = addonMgr.addon("unicode");
         p_clipboard = addonMgr.addon("clipboard", true);
+        addonMgr.addon("rime", true);
         setupCallback(p_frontend);
     }
 

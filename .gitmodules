@@ -18,3 +18,6 @@
 	path = third_party/llama.cpp
 	url = https://github.com/ggml-org/llama.cpp.git
 	shallow = true
+[submodule "app/src/main/cpp/fcitx5-rime"]
+	path = app/src/main/cpp/fcitx5-rime
+	url = https://github.com/fcitx/fcitx5-rime.git

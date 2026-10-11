@@ -24,6 +24,27 @@ find_package(LibIMETable MODULE)
 find_package(fcitx5-lua REQUIRED CONFIG)
 find_package(fcitx5-chinese-addons REQUIRED CONFIG)
 
+# Match the pinned Fcitx5 Android Rime plugin's static librime linkage.
+set(Rime_VERSION "1.16.1")
+set(Rime_dependencies
+        log
+        "${PREBUILT_DIR}/glog/${ANDROID_ABI}/lib/libglog.a"
+        "${PREBUILT_DIR}/leveldb/${ANDROID_ABI}/lib/libleveldb.a"
+        "${PREBUILT_DIR}/lua/${ANDROID_ABI}/lib/liblua_static.a"
+        "${PREBUILT_DIR}/marisa/${ANDROID_ABI}/lib/libmarisa.a"
+        "${PREBUILT_DIR}/opencc/${ANDROID_ABI}/lib/libopencc.a"
+        "${PREBUILT_DIR}/yaml-cpp/${ANDROID_ABI}/lib/libyaml-cpp.a"
+        )
+add_library(Rime_static STATIC IMPORTED)
+set_target_properties(Rime_static PROPERTIES
+        IMPORTED_LOCATION "${PREBUILT_DIR}/librime/${ANDROID_ABI}/lib/librime.a"
+        INTERFACE_INCLUDE_DIRECTORIES "${PREBUILT_DIR}/librime/${ANDROID_ABI}/include"
+        INTERFACE_LINK_LIBRARIES "${Rime_dependencies}"
+        )
+set(RIME_TARGET $<LINK_LIBRARY:WHOLE_ARCHIVE,Rime_static>)
+set(RIME_DATA_DIR "${CMAKE_INSTALL_DATADIR}/rime-data")
+add_subdirectory(fcitx5-rime)
+
 include("${FCITX_INSTALL_CMAKECONFIG_DIR}/Fcitx5Utils/Fcitx5CompilerSettings.cmake")
 
 add_subdirectory(po)
@@ -108,3 +129,4 @@ install(DIRECTORY "${PREBUILT_DIR}/chinese-addons-data/pinyinhelper" DESTINATION
 install(DIRECTORY "${PREBUILT_DIR}/libime/table" DESTINATION "${FCITX_INSTALL_PKGDATADIR}" COMPONENT prebuilt-assets)
 install(DIRECTORY "${PREBUILT_DIR}/libime/data/" DESTINATION "${FCITX_INSTALL_DATADIR}/libime" COMPONENT prebuilt-assets)
 install(DIRECTORY "${PREBUILT_DIR}/opencc/data/" DESTINATION "${FCITX_INSTALL_DATADIR}/opencc" COMPONENT prebuilt-assets)
+install(FILES "rime-data/default.yaml" DESTINATION "${FCITX_INSTALL_DATADIR}/rime-data" COMPONENT prebuilt-assets)
