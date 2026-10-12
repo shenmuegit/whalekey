@@ -1,0 +1,4 @@
+# WhaleKey exposes only the upstream full-Pinyin scheme.
+patch:
+  schema_list:
+    - schema: rime_ice

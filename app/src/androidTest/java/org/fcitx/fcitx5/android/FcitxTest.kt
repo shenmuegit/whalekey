@@ -55,7 +55,6 @@ class FcitxTest {
             // wait fcitx started
             runBlocking {
                 receiveFirst<FcitxEvent.ReadyEvent>()
-                fcitx.setEnabledIme(arrayOf("pinyin"))
                 fcitx.setGlobalConfig(
                     RawConfig(
                         arrayOf(
@@ -113,23 +112,69 @@ class FcitxTest {
 
     @Test
     fun testPinyin(): Unit = runBlocking {
-        fcitx.setEnabledIme(arrayOf("pinyin"))
+        fcitx.activate(android.os.Process.myUid(), InstrumentationRegistry.getInstrumentation().targetContext.packageName)
+        fcitx.focus()
+        fcitx.activateIme("rime")
+        awaitRimeDeployment()
         sendString("nihaoshijie")
-        val expected = "你好世界"
-        fcitx.select(0)
-        val commitString = receiveFirstCommitString()?.data
-        Timber.i("commitString is $commitString")
-        Assert.assertEquals(expected, commitString)
+        val commit = async(start = CoroutineStart.UNDISPATCHED) {
+            withTimeout(3_000) {
+                fcitx.eventFlow.filterIsInstance<FcitxEvent.CommitStringEvent>().first()
+            }
+        }
+        Assert.assertTrue(fcitx.select(0))
+        Assert.assertEquals("你好世界", commit.await().data.text)
+        fcitx.reset()
+    }
+
+    private suspend fun awaitRimeDeployment() {
+        withTimeout(180_000) {
+            while (true) {
+                fcitx.reset()
+                fcitx.sendKey('n')
+                fcitx.sendKey('i')
+                if (fcitx.getCandidates(0, 3).any { it.text == "你" }) break
+                delay(500)
+            }
+        }
+        fcitx.reset()
+    }
+
+    @Test
+    fun testRimeIceDefaultAndTables(): Unit = runBlocking {
+        Assert.assertEquals(listOf("rime"), fcitx.enabledIme().map { it.uniqueName })
+        Assert.assertEquals(listOf("rime"), fcitx.availableIme()
+            .filter { it.languageCode.startsWith("zh") }.map { it.uniqueName })
+        fcitx.activate(android.os.Process.myUid(), InstrumentationRegistry.getInstrumentation().targetContext.packageName)
+        fcitx.focus()
+        fcitx.activateIme("rime")
+        awaitRimeDeployment()
+        Assert.assertEquals("雾凇拼音", fcitx.currentIme().subMode.name)
+        val cases = listOf(
+            Triple("8105", "cei", "𤭢"),
+            Triple("base", "ceile", "𤭢了"),
+            Triple("ext", "abeierjiang", "阿贝尔奖"),
+            Triple("tencent", "shijierengongzhinengdahui", "世界人工智能大会"),
+            Triple("others", "konglaolao", "空落落")
+        )
+        for ((table, pinyin, expected) in cases) {
+            fcitx.reset()
+            sendString(pinyin)
+            val candidates = fcitx.getCandidates(0, 50).map { it.text }
+            Log.i("WhaleKeyRimeIce", "table,$table,$pinyin,$expected,${candidates.joinToString("|")}")
+            Assert.assertTrue("Missing $table word $expected for $pinyin", expected in candidates)
+        }
         fcitx.reset()
     }
 
     @Test
     fun testPinyinCandidateBaseline(): Unit = runBlocking {
-        fcitx.setEnabledIme(arrayOf("pinyin"))
+        Assert.assertEquals(listOf("rime"), fcitx.enabledIme().map { it.uniqueName })
         fcitx.activate(android.os.Process.myUid(), InstrumentationRegistry.getInstrumentation().targetContext.packageName)
         fcitx.focus()
-        fcitx.activateIme("pinyin")
-        Assert.assertEquals("pinyin", fcitx.currentIme().uniqueName)
+        fcitx.activateIme("rime")
+        awaitRimeDeployment()
+        Assert.assertEquals("rime", fcitx.currentIme().uniqueName)
         val cases = listOf(
             Triple("common", "nihao", "你好"),
             Triple("common", "xiexie", "谢谢"),
@@ -180,21 +225,14 @@ class FcitxTest {
 
     @Test
     fun testInputPanelStatus(): Unit = runBlocking {
-        fcitx.reset()
-        Timber.i("after first reset: ${fcitx.isEmpty()}")
-        Assert.assertEquals(true, fcitx.isEmpty())
+        fcitx.activate(android.os.Process.myUid(), InstrumentationRegistry.getInstrumentation().targetContext.packageName)
+        fcitx.focus()
+        fcitx.activateIme("rime")
+        awaitRimeDeployment()
+        Assert.assertTrue(fcitx.isEmpty())
         fcitx.sendKey('a')
-        do {
-            val list = receiveFirstCandidateList()
-        } while (list!!.data.candidates.isNotEmpty())
-        Timber.i("after sending 'a': ${fcitx.isEmpty()}")
-        Assert.assertEquals(false, fcitx.isEmpty())
+        Assert.assertFalse(fcitx.isEmpty())
         fcitx.reset()
-        do {
-            val list = receiveFirstCandidateList()
-        } while (list!!.data.candidates.isNotEmpty())
-        Timber.i("after second reset: ${fcitx.isEmpty()}")
-        Assert.assertEquals(true, fcitx.isEmpty())
+        Assert.assertTrue(fcitx.isEmpty())
     }
-
 }

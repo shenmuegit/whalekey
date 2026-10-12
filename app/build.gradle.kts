@@ -67,12 +67,12 @@ fcitxComponent {
         "libime",
         "fcitx5-chinese-addons"
     )
-    // Keep full Pinyin as the only bundled Chinese input method.
+    // Rime Ice is the only bundled Chinese input method.
     excludeFiles = listOf(
-        "cangjie", "erbi", "qxm", "wanfeng", "shuangpin", "wbpy", "wbx", "zrm", "db"
+        "cangjie", "erbi", "qxm", "wanfeng", "shuangpin", "wbpy", "wbx", "zrm", "db", "pinyin"
     ).map {
         "usr/share/fcitx5/inputmethod/$it.conf"
-    } + "usr/share/fcitx5/inputmethod/rime.conf"
+    } + "usr/share/fcitx5/addon/pinyin.conf"
     installPrebuiltAssets = true
 }
 
@@ -81,7 +81,9 @@ generateDataDescriptor {
         "models/qwen2.5-0.5b-instruct-q4_k_m.gguf",
         "licenses/Qwen2.5-0.5B-Instruct-LICENSE.txt",
         "licenses/llama.cpp-LICENSE.txt",
-        "licenses/librime-octagram-GPL-3.0.txt"
+        "licenses/librime-octagram-GPL-3.0.txt",
+        "licenses/rime-ice-GPL-3.0.txt",
+        "licenses/rime-ice-SOURCE.txt"
     )
 }
 

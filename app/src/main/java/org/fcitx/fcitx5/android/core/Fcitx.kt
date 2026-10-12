@@ -402,9 +402,9 @@ class Fcitx(private val context: Context) : FcitxAPI, FcitxLifecycleOwner {
         }
 
         // will be called in fcitx main thread
-        private fun onFirstRun() {
-            Timber.i("onFirstRun")
-            setEnabledInputMethods(arrayOf("pinyin"))
+        private fun configureDefaultInputMethod() {
+            Timber.i("Configuring Rime default input method")
+            setEnabledInputMethods(arrayOf("rime"))
         }
 
         /**
@@ -500,13 +500,13 @@ class Fcitx(private val context: Context) : FcitxAPI, FcitxLifecycleOwner {
 
     private var firstRun by AppPrefs.getInstance().internal.firstRun
 
-    private fun handleFirstRunReadyEvent(event: FcitxEvent<*>) {
-        if (event is FcitxEvent.ReadyEvent && firstRun) {
+    private fun handleDefaultImeReadyEvent(event: FcitxEvent<*>) {
+        if (event is FcitxEvent.ReadyEvent) {
             firstRun = false
             // this method runs in same thread with `startupFcitx`
             // block it will also block fcitx
-            onFirstRun()
-            unregisterFcitxEventHandler(::handleFirstRunReadyEvent)
+            configureDefaultInputMethod()
+            unregisterFcitxEventHandler(::handleDefaultImeReadyEvent)
         }
     }
 
@@ -535,9 +535,7 @@ class Fcitx(private val context: Context) : FcitxAPI, FcitxLifecycleOwner {
             Timber.w("Skip starting fcitx: not at stopped state!")
             return
         }
-        if (firstRun) {
-            registerFcitxEventHandler(::handleFirstRunReadyEvent)
-        }
+        registerFcitxEventHandler(::handleDefaultImeReadyEvent)
         registerFcitxEventHandler(::handleFcitxEvent)
         lifecycleRegistry.postEvent(FcitxLifecycle.Event.ON_START)
         ClipboardManager.addOnUpdateListener(onClipboardUpdate)

@@ -129,4 +129,4 @@ install(DIRECTORY "${PREBUILT_DIR}/chinese-addons-data/pinyinhelper" DESTINATION
 install(DIRECTORY "${PREBUILT_DIR}/libime/table" DESTINATION "${FCITX_INSTALL_PKGDATADIR}" COMPONENT prebuilt-assets)
 install(DIRECTORY "${PREBUILT_DIR}/libime/data/" DESTINATION "${FCITX_INSTALL_DATADIR}/libime" COMPONENT prebuilt-assets)
 install(DIRECTORY "${PREBUILT_DIR}/opencc/data/" DESTINATION "${FCITX_INSTALL_DATADIR}/opencc" COMPONENT prebuilt-assets)
-install(FILES "rime-data/default.yaml" DESTINATION "${FCITX_INSTALL_DATADIR}/rime-data" COMPONENT prebuilt-assets)
+install(DIRECTORY "rime-data/" DESTINATION "${FCITX_INSTALL_DATADIR}/rime-data" COMPONENT prebuilt-assets)

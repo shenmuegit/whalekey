@@ -1,0 +1,12 @@
+Rime Ice
+Source: https://github.com/iDvel/rime-ice
+Revision: da1fbe602e38f26db846fa10120ee64c2b0324c0
+License: GPL-3.0-only (see rime-ice-GPL-3.0.txt)
+Copyright and individual source acknowledgements are retained in the bundled files.
+
+The complete 8105, base, ext, tencent and others Chinese source tables are bundled,
+including 𤭢 (cei) and 𤭢了 (cei le). The full-Pinyin scheme's English, radical,
+Lua and OpenCC dependencies are included without converting through libime.
+WhaleKey adds default.custom.yaml to expose only rime_ice.
+WhaleKey patch (2026-10-12): lua/lunar.lua opens lua/lunar.db using
+rime_api.get_shared_data_dir() instead of a path relative to the user data directory.
