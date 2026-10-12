@@ -792,6 +792,9 @@ class FcitxInputMethodService : LifecycleInputMethodService() {
         candidatesStart: Int,
         candidatesEnd: Int
     ) {
+        if (oldSelStart != newSelStart || oldSelEnd != newSelEnd) {
+            rewriteGeneration++
+        }
         // onUpdateSelection can left behind when user types quickly enough, eg. long press backspace
         cursorUpdateIndex += 1
         Timber.d("onUpdateSelection: old=[$oldSelStart,$oldSelEnd] new=[$newSelStart,$newSelEnd] cand=[$candidatesStart,$candidatesEnd]")
