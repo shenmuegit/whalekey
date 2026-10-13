@@ -1,0 +1,11 @@
+{
+    "uniqueId": "rime/librime-predict-data",
+    "artifactVersion": "data-1.0",
+    "description": "Official Rime essay and octagram prediction data",
+    "name": "Rime prediction data",
+    "website": "https://github.com/rime/librime-predict/releases/tag/data-1.0",
+    "tag": "data",
+    "licenses": [
+        "LGPL-3.0-only"
+    ]
+}

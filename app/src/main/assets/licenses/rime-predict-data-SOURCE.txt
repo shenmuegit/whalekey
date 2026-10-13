@@ -1,0 +1,33 @@
+Rime prediction data
+Source: https://github.com/rime/librime-predict/releases/tag/data-1.0
+Release: data-1.0, published 2023-10-31
+Release tag revision: dbe622ffa8b34b1cc47ffa3ea680f865a3d2aaa5
+Publisher: lotem / Rime contributors
+Upstream description: "prediction database made from essay + octagram"
+
+Bundled predict.db is the unmodified official release asset (7,529,528 bytes).
+SHA-256: 2a5a2b7c77f8f3d7c0836dfc8fd8b791ac2574d8bd93a3a2baaae1ee4861f5be
+The corresponding unmodified predict.txt release asset is included here as
+rime-predict-data-predict.txt (10,157,763 bytes).
+SHA-256: df0f7a9ef96569da402d9ea2376aefad4d15382ebcccb05ec84a0acbc00c7f83
+It contains 545,124 prediction relations for 169,817 contexts.
+Native format: Rime::Predict/1.0, read by the bundled librime-predict.
+To rebuild: use upstream tools/build_predict.cc with predict.txt as stdin.
+Tool source: https://github.com/rime/librime-predict/tree/dbe622ffa8b34b1cc47ffa3ea680f865a3d2aaa5
+The plugin/tool license is BSD-3-Clause; this does not relicense the data.
+
+Underlying data sources:
+- Rime essay: https://github.com/rime/rime-essay
+- Rime octagram data: https://github.com/lotem/rime-octagram-data
+Both declare GNU LGPL version 3. The LGPL text is included as
+rime-predict-data-LGPL-3.0.txt, and its incorporated GNU GPL version 3
+is included as rime-ice-GPL-3.0.txt. Essay author/source acknowledgements
+are preserved in rime-predict-data-essay-AUTHORS.txt.
+The official data release does not identify the exact essay/octagram input
+revisions. Their contemporaneous LGPL declarations can be inspected at:
+https://github.com/rime/rime-essay/tree/e0519d0579722a0871efb68189272cba61a7350b
+https://github.com/lotem/rime-octagram-data/tree/31d9b2e081af7708939d2eeb516f2b4c80b6a23f
+These are license references, not assertions about the release's training inputs.
+
+The release is Traditional-Chinese oriented. WhaleKey preserves its bytes;
+contexts absent from this data produce no native next-word candidates.

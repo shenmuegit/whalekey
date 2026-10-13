@@ -1,0 +1,8 @@
+# Enable the bundled native librime-predict component.
+patch:
+  "engine/processors/@before 0": predictor
+  "engine/translators/@before 0": predict_translator
+  "switches/+":
+    - name: prediction
+      states: [关闭预测, 开启预测]
+      reset: 1

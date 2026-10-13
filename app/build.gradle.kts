@@ -83,7 +83,11 @@ generateDataDescriptor {
         "licenses/llama.cpp-LICENSE.txt",
         "licenses/librime-octagram-GPL-3.0.txt",
         "licenses/rime-ice-GPL-3.0.txt",
-        "licenses/rime-ice-SOURCE.txt"
+        "licenses/rime-ice-SOURCE.txt",
+        "licenses/rime-predict-data-SOURCE.txt",
+        "licenses/rime-predict-data-predict.txt",
+        "licenses/rime-predict-data-LGPL-3.0.txt",
+        "licenses/rime-predict-data-essay-AUTHORS.txt"
     )
 }
 

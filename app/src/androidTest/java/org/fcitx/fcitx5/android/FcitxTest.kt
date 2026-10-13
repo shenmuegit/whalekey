@@ -206,19 +206,43 @@ class FcitxTest {
         }
         Log.i("WhaleKeyBaseline", "summary,top1=$top1/${cases.size},top3=$top3/${cases.size}")
 
-        for (pinyin in listOf("nihao", "jintian")) {
+        fcitx.reset()
+    }
+
+    @Test
+    fun testRimeNextWordSuggestions(): Unit = runBlocking {
+        fcitx.activate(android.os.Process.myUid(), InstrumentationRegistry.getInstrumentation().targetContext.packageName)
+        fcitx.focus()
+        fcitx.activateIme("rime")
+        awaitRimeDeployment()
+        for ((pinyin, expected) in listOf(
+            "nihao" to "你好",
+            "jintian" to "今天",
+            "shijie" to "世界",
+            "beijing" to "北京",
+            "mingtian" to "明天",
+            "wanshang" to "晚上"
+        )) {
             fcitx.reset()
             sendString(pinyin)
-            val selected = fcitx.getCandidates(0, 1).first().text
+            Assert.assertEquals(expected, fcitx.getCandidates(0, 1).first().text)
             val commit = async(start = CoroutineStart.UNDISPATCHED) {
                 withTimeout(3_000) {
                     fcitx.eventFlow.filterIsInstance<FcitxEvent.CommitStringEvent>().first()
                 }
             }
             Assert.assertTrue("Could not commit $pinyin", fcitx.select(0))
-            Assert.assertEquals(selected, commit.await().data.text)
-            val nextWords = fcitx.getCandidates(0, 3).map { it.text }
-            Log.i("WhaleKeyBaseline", "next-word,$pinyin,$selected,${nextWords.joinToString("|")}")
+            Assert.assertEquals(expected, commit.await().data.text)
+            val suggestions = fcitx.getCandidates(0, 5).map { it.text }
+            Log.i("WhaleKeyBaseline", "next-word,$pinyin,$expected,${suggestions.joinToString("|")}")
+            Assert.assertTrue("No next-word suggestions after $expected", suggestions.isNotEmpty())
+            val suggestionCommit = async(start = CoroutineStart.UNDISPATCHED) {
+                withTimeout(3_000) {
+                    fcitx.eventFlow.filterIsInstance<FcitxEvent.CommitStringEvent>().first()
+                }
+            }
+            Assert.assertTrue("Could not select suggestion after $expected", fcitx.select(0))
+            Assert.assertEquals(suggestions.first(), suggestionCommit.await().data.text)
         }
         fcitx.reset()
     }
