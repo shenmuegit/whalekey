@@ -215,7 +215,14 @@ class FcitxTest {
         fcitx.focus()
         fcitx.activateIme("rime")
         awaitRimeDeployment()
+        val missing = mutableListOf<String>()
         for ((pinyin, expected) in listOf(
+            "zhongguo" to "中国",
+            "xiexie" to "谢谢",
+            "women" to "我们",
+            "guojia" to "国家",
+            "xianzai" to "现在",
+            "tamen" to "他们",
             "nihao" to "你好",
             "jintian" to "今天",
             "shijie" to "世界",
@@ -235,7 +242,10 @@ class FcitxTest {
             Assert.assertEquals(expected, commit.await().data.text)
             val suggestions = fcitx.getCandidates(0, 5).map { it.text }
             Log.i("WhaleKeyBaseline", "next-word,$pinyin,$expected,${suggestions.joinToString("|")}")
-            Assert.assertTrue("No next-word suggestions after $expected", suggestions.isNotEmpty())
+            if (suggestions.isEmpty()) {
+                missing += expected
+                continue
+            }
             val suggestionCommit = async(start = CoroutineStart.UNDISPATCHED) {
                 withTimeout(3_000) {
                     fcitx.eventFlow.filterIsInstance<FcitxEvent.CommitStringEvent>().first()
@@ -245,6 +255,7 @@ class FcitxTest {
             Assert.assertEquals(suggestions.first(), suggestionCommit.await().data.text)
         }
         fcitx.reset()
+        Assert.assertTrue("No next-word suggestions after ${missing.joinToString()}", missing.isEmpty())
     }
 
     @Test

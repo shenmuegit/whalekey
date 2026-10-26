@@ -5,16 +5,43 @@ Release tag revision: dbe622ffa8b34b1cc47ffa3ea680f865a3d2aaa5
 Publisher: lotem / Rime contributors
 Upstream description: "prediction database made from essay + octagram"
 
-Bundled predict.db is the unmodified official release asset (7,529,528 bytes).
-SHA-256: 2a5a2b7c77f8f3d7c0836dfc8fd8b791ac2574d8bd93a3a2baaae1ee4861f5be
-The corresponding unmodified predict.txt release asset is included here as
-rime-predict-data-predict.txt (10,157,763 bytes).
+WhaleKey modified this data on 2026-10-13 with official OpenCC 1.2.0,
+t2s configuration/dictionaries pinned at:
+https://github.com/BYVoid/OpenCC/tree/907bfcbbd3aae86ff04bc8eaca67c8af03108ddf
+Both contexts and continuations were converted to Simplified Chinese.
+Equal converted context/continuation pairs retain the maximum original weight;
+candidates are ordered by descending weight, then continuation text.
+All distinct converted relations are retained: 542,134 relations / 168,996
+contexts, after collapsing 2,990 duplicate relations.
+
+Bundled predict.db is this modified Simplified derivative (7,475,436 bytes).
+SHA-256: 2b861d71d06de5b762808385c87104846e151a96dc375d014cbc4155d1d5c07e
+Its corresponding preferred source is rime-predict-data-predict-simplified.txt
+(10,110,656 bytes).
+SHA-256: 174aa0ec3e12f9aaa8b4ef435b4329f79427e1583dcaca9d09a54c9871091486
+The original, unmodified release source remains rime-predict-data-predict.txt
+(10,157,763 bytes), with 545,124 relations / 169,817 contexts.
 SHA-256: df0f7a9ef96569da402d9ea2376aefad4d15382ebcccb05ec84a0acbc00c7f83
-It contains 545,124 prediction relations for 169,817 contexts.
 Native format: Rime::Predict/1.0, read by the bundled librime-predict.
-To rebuild: use upstream tools/build_predict.cc with predict.txt as stdin.
-Tool source: https://github.com/rime/librime-predict/tree/dbe622ffa8b34b1cc47ffa3ea680f865a3d2aaa5
+Source preparation: tools/prepare_predict.py in https://github.com/shenmuegit/whalekey.
+With official OpenCC==1.2.0 installed, compile the pinned data/dictionary/
+TSCharacters.txt and TSPhrases.txt with opencc_dict -f text -t ocd2; place
+both .ocd2 files beside the pinned data/config/t2s.json. Then run:
+python tools/prepare_predict.py app/src/main/assets/licenses/rime-predict-data-predict.txt app/src/main/assets/licenses/rime-predict-data-predict-simplified.txt PATH/TO/t2s.json
+Focused check: set OPENCC_T2S_CONFIG to that t2s.json, then run
+python tools/test_prepare_predict.py
+Native compilation: sh tools/build_predict_android.sh PATH/TO/SOURCE-DIRECTORY
+Extract pinned librime-predict, librime and darts-clone sources into that directory:
+- librime-predict: 920bd41ebf6f9bf6855d14fbe80212e54e749791
+- librime: de4700e9f6b75b109910613df907965e3cbe0567 (1.16.1)
+- darts-clone: 87b71afd6cf784953e3c08f24c64203397f3b724
+The script uses the repository's prebuilt librime and parent Android SDK NDK
+28.0.13004108. Run its build_predict-android executable on x86_64 Android:
+build_predict-android predict.db < rime-predict-data-predict-simplified.txt
+Compiler: upstream tools/build_predict.cc at
+https://github.com/rime/librime-predict/tree/920bd41ebf6f9bf6855d14fbe80212e54e749791
 The plugin/tool license is BSD-3-Clause; this does not relicense the data.
+OpenCC is Apache-2.0 licensed; its existing license/attribution is retained.
 
 Underlying data sources:
 - Rime essay: https://github.com/rime/rime-essay
@@ -29,5 +56,3 @@ https://github.com/rime/rime-essay/tree/e0519d0579722a0871efb68189272cba61a7350b
 https://github.com/lotem/rime-octagram-data/tree/31d9b2e081af7708939d2eeb516f2b4c80b6a23f
 These are license references, not assertions about the release's training inputs.
 
-The release is Traditional-Chinese oriented. WhaleKey preserves its bytes;
-contexts absent from this data produce no native next-word candidates.

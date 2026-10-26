@@ -1,7 +1,7 @@
 {
     "uniqueId": "rime/librime-predict-data",
-    "artifactVersion": "data-1.0",
-    "description": "Official Rime essay and octagram prediction data",
+    "artifactVersion": "data-1.0-simplified-2026-10-13",
+    "description": "Rime essay and octagram prediction data simplified with OpenCC 1.2.0",
     "name": "Rime prediction data",
     "website": "https://github.com/rime/librime-predict/releases/tag/data-1.0",
     "tag": "data",
